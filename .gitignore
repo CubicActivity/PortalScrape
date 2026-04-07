@@ -75,7 +75,7 @@ dmypy.json
 .idea/sqlDataSources.xml
 .idea/dynamic.xml
 
-Fetchers/.env
+.env
 CSV/
 
 output/
