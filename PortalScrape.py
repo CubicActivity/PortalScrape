@@ -7,21 +7,24 @@ import time
 from datetime import datetime
 from bs4 import BeautifulSoup
 
-# To bypass cloudflare flagging
 USER_AGENTS = [
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
     "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36"
 ]
-# Up to 29 requests at the same time (higher than this script crashes)
+
 sem = asyncio.Semaphore(29)
 
+def clean_text(text):
+    if not text: return "N/A"
+    cleaned = " ".join(text.split())
+    return cleaned.replace(";", " ").replace(",", " -").strip()
 
-#
 def extract_skills(title):
     keywords = {'Python': ['python', 'django', 'flask'], 'JavaScript': ['javascript', 'js', 'react'],
                 'Backend': ['backend', 'sql', 'api'], 'Frontend': ['frontend', 'css', 'html'],
-                'DevOps': ['aws', 'docker']}
+                'DevOps': ['devops', 'aws', 'docker', 'ci/cd'], 'Software': ['software', '.net', 'php', 'java'],
+                'Data Science': ['data engineer', 'data science'], 'Machine learning': ['machine learning'], 'Ai': ['ai']}
     found = [skill for skill, kws in keywords.items() if any(kw in title.lower() for kw in kws)]
     return ", ".join(found) if found else "General"
 
@@ -36,22 +39,19 @@ async def fetch_findwork(session, page):
                 html = await response.text()
                 soup = BeautifulSoup(html, "lxml")
                 job_rows = soup.select('div[id^="job-"]')
-
                 jobs = []
                 for row in job_rows:
                     title_el = row.select_one("h4.text-dark")
                     link_el = row.select_one("a[rel='cannonical']")
-
                     if title_el and link_el:
-                        full_title = title_el.get_text(strip=True)
-                        company = "N/A"
-                        if "," in full_title:
-                            parts = full_title.split(",")
-                            title = parts[0].strip()
-                            company = parts[1].strip()
+                        full_text = title_el.get_text(strip=True)
+                        if "," in full_text:
+                            parts = full_text.rsplit(",", 1)
+                            title = clean_text(parts[0])
+                            company = clean_text(parts[1])
                         else:
-                            title = full_title
-
+                            title = clean_text(full_text)
+                            company = "N/A"
                         jobs.append({
                             "title": title,
                             "url": "https://findwork.dev" + link_el['href'],
@@ -62,7 +62,6 @@ async def fetch_findwork(session, page):
                 return jobs
         except:
             return []
-
 
 async def fetch_arbeitnow(session, page):
     async with sem:
@@ -77,16 +76,17 @@ async def fetch_arbeitnow(session, page):
                 for row in job_items:
                     title_el = row.select_one('[itemprop="title"]')
                     link_el = row.select_one('a[href*="/jobs/"]')
+                    company_el = row.select_one('[itemprop="hiringOrganization"]')
                     if title_el and link_el:
-                        title_text = title_el.get_text(strip=True)
+                        title_text = clean_text(title_el.get_text())
+                        company_text = clean_text(company_el.get_text()) if company_el else "N/A"
                         full_url = link_el['href']
                         if not full_url.startswith('http'): full_url = "https://www.arbeitnow.com" + full_url
-                        jobs.append({"title": title_text, "url": full_url, "source": "ArbeitNow", "company": "N/A",
+                        jobs.append({"title": title_text, "url": full_url, "source": "ArbeitNow", "company": company_text,
                                      "skills": extract_skills(title_text)})
                 return jobs
         except:
             return []
-
 
 async def fetch_api_portal(session, url, source, title_key, url_key):
     try:
@@ -94,11 +94,10 @@ async def fetch_api_portal(session, url, source, title_key, url_key):
         async with session.get(url, headers=headers, timeout=15) as resp:
             data = await resp.json()
             raw_jobs = data[1:] if source == "RemoteOK" else data.get('jobs', [])
-            return [{"title": j[title_key], "url": j[url_key], "source": source, "company": j.get('company', 'N/A'),
+            return [{"title": clean_text(j[title_key]), "url": j[url_key], "source": source, "company": clean_text(j.get('company', 'N/A')),
                      "skills": extract_skills(j[title_key])} for j in raw_jobs if title_key in j]
     except:
         return []
-
 
 async def PortalScrape():
     start_time = time.time()
@@ -138,7 +137,6 @@ async def PortalScrape():
             print(f"Scraping successful! Saved {len(df)} unique jobs in {duration:.2f}s at ./Results/PortalScrape_{timestamp}.csv")
         else:
             print("All sources returned 0 results.")
-
 
 if __name__ == "__main__":
     asyncio.run(PortalScrape())
