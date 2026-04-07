@@ -1,4 +1,4 @@
-# PortalScrape 1.0
+# PortalScrape
 Multithreaded Python web scraper built for gathering & storing hiring data.
 
 #### Python version requirement to run the script:
