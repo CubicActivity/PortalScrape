@@ -132,7 +132,7 @@ async def PortalScrape():
 
             timestamp = datetime.now().strftime('%d.%m.%Y_%H-%M%p')
             filename = os.path.join(results_path, f"PortalScrape_{timestamp}.csv")
-            df.to_csv(filename, index=False, encoding='utf-8-sig')
+            df.to_csv(filename, index=False, sep=';', encoding='utf-8-sig')
 
             duration = time.time() - start_time
             print(f"Scraping successful! Saved {len(df)} unique jobs in {duration:.2f}s at ./Results/PortalScrape_{timestamp}.csv")
