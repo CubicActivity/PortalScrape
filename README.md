@@ -1,5 +1,5 @@
 # PortalScrape
-Asynchronous Python-based web scraper for gathering & storing hiring data from multiple hiring portals (currently scrapes from [Findwork](https://findwork.dev) and [ArbeitNow](https://www.arbeitnow.com)).
+Asynchronous Python web scraper for gathering & storing hiring data from multiple job portals (currently scrapes from [Findwork](https://findwork.dev) and [ArbeitNow](https://www.arbeitnow.com)).
 
 ---
 
