@@ -23,6 +23,7 @@ Asynchronous Python-based web scraper for gathering & storing hiring data from m
 
    pip install -r requirements.txt
 ```
+> **Note:** `run.py` points at `.venv/Scripts/python.exe`, so it's Windows-only as written. For macOS/Linux, swap that path to `.venv/bin/python`.
 
 3. **Run the pipeline**:
 ```bash
@@ -34,7 +35,6 @@ Asynchronous Python-based web scraper for gathering & storing hiring data from m
    - spins up worker processes that pull tasks off the queue and scrape concurrently, with a live `tqdm` progress bar
    - runs `export.py` once scraping finishes, writing results to `Results/PortalScrape_<timestamp>.csv`
 
-> **Note:** `run.py` points at `.venv/Scripts/python.exe`, so it's Windows-only as written. For macOS/Linux, swap that path to `.venv/bin/python`.
 
 ## Dependencies
 
@@ -44,10 +44,10 @@ Asynchronous Python-based web scraper for gathering & storing hiring data from m
 
 | File | Purpose |
 |---|---|
-| `run.py` | Orchestrator — prompts for worker count, runs the producer, launches workers, tracks live progress via Redis, then runs the exporter. |
-| `producer.py` | Prompts for pages per source, clears old queue/result data, and pushes one task per page into the `scrape_queue` Redis list. |
-| `worker.py` | Pulls tasks from Redis, scrapes each source concurrently via `aiohttp` + `BeautifulSoup`, tags each job with a detected skill category, and pushes results into `scraped_results`. |
-| `export.py` | Drains `scraped_results` from Redis and writes a clean, timestamped CSV into the `Results/` folder. |
+| `run.py` | Orchestrator - asks user for worker count, runs the producer, launches the workers, tracks live progress via Redis and tqdm, and finishes with running the export script. |
+| `producer.py` | Asks the user for how many pages per source to fetch, clears old Redis queue/result data, and pushes one task per page into the `scrape_queue` Redis list. |
+| `worker.py` | Fetches tasks from Redis, scrapes each source concurrently via `aiohttp` + `BeautifulSoup`, tags each job with a detected skill category, and pushes results into `scraped_results`. |
+| `export.py` | Clears `scraped_results` from Redis and writes a clean, timestamped CSV into the `Results/` folder. |
 
 ## How It Works
 
