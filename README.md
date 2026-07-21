@@ -6,7 +6,7 @@ Asynchronous Python-based web scraper for gathering & storing hiring data from m
 ## Prerequisites
 
 - [Docker](https://docs.docker.com/get-docker/) installed and running
-- Python 3.10+ (3.14 recommended)
+- [Python 3.10+](https://www.python.org/downloads/) (3.14 recommended)
 
 ## Quick Start Guide
 
