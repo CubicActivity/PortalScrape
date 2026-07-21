@@ -1,4 +1,5 @@
-aiohttp
-pandas
+redis
 beautifulsoup4
+aiohttp
+tqdm
 lxml

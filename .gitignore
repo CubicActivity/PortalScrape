@@ -61,9 +61,6 @@ dmypy.json
 
 .vscode/
 .idea/
-
-.idea/
-
 .idea/codeStyles/
 .idea/workspace.xml
 .idea/tasks.xml
@@ -76,9 +73,7 @@ dmypy.json
 .idea/dynamic.xml
 
 .env
-CSV/
-
 output/
-results/
+Results/
 logs/
 tmp/
