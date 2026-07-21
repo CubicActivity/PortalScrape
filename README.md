@@ -36,7 +36,11 @@ Asynchronous Python web scraper for gathering & storing hiring data from multipl
 
 ## Dependencies
 
-`aiohttp`, `beautifulsoup4`, `lxml`, `redis`, `tqdm` — see `requirements.txt`.
+- `aiohttp`
+- `beautifulsoup4`
+- `lxml`
+- `redis`
+- `tqdm`
 
 ## Project Files
 
