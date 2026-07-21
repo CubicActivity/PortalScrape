@@ -23,8 +23,6 @@ Asynchronous Python-based web scraper for gathering & storing hiring data from m
 
    pip install -r requirements.txt
 ```
-> **Note:** `run.py` points at `.venv/Scripts/python.exe`, so it's Windows-only as written. For macOS/Linux, swap that path to `.venv/bin/python`.
-
 3. **Run the pipeline**:
 ```bash
    python run.py
