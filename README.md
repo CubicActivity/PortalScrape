@@ -8,7 +8,7 @@ Asynchronous Python-based web scraper for gathering & storing hiring data from m
 - [Docker](https://docs.docker.com/get-docker/) installed and running
 - Python 3.10+ (3.14 recommended)
 
-## Quick Start
+## Quick Start Guide
 
 1. **Start a Redis instance** on your machine:
 ```bash
@@ -36,10 +36,9 @@ Asynchronous Python-based web scraper for gathering & storing hiring data from m
 
 > **Note:** `run.py` points at `.venv/Scripts/python.exe`, so it's Windows-only as written. For macOS/Linux, swap that path to `.venv/bin/python`.
 
-## Requirements
+## Dependencies
 
-- **Python:** 3.14+ (should also work on 3.10+)
-- **Dependencies:** `aiohttp`, `beautifulsoup4`, `lxml`, `redis`, `tqdm`
+`aiohttp`, `beautifulsoup4`, `lxml`, `redis`, `tqdm` — see `requirements.txt`.
 
 ## Project Files
 
@@ -58,6 +57,15 @@ A "task" is just one page of listings from one site — e.g. `{"source": "Findwo
 2. Multiple `worker.py` processes run in parallel, each pulling a task off the queue via `BLPOP`, scraping that page, and pushing structured job records back into Redis.
 3. Job titles are matched against a keyword map (`SKILL_KEYWORDS` in `worker.py`) to tag each posting with relevant skill categories (e.g. `Frontend / JS Frameworks`, `AI / LLM / Agentic`).
 4. `export.py` collects everything into a single CSV once all workers finish.
+
+## Output
+
+Each row in the exported CSV looks like:
+
+```
+title,company,source,skills,url
+Senior Frontend Engineer,Acme Corp,Findwork,Frontend / JS Frameworks,https://findwork.dev/jobs/123
+```
 
 ## Redis Keys Used
 
